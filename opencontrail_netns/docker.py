@@ -6,6 +6,7 @@ import argparse
 import socket
 import subprocess
 import sys
+import random
 
 from instance_provisioner import Provisioner
 from lxc_manager import LxcManager
@@ -47,15 +48,17 @@ def main():
 
     subprocess.check_output(
         'ln -sf /proc/%d/ns/net /var/run/netns/%s' % (pid, args.container_id), shell=True)
+    ifname_str='%s%s' %('veth',str(random.randrange(1,1024)))
 
     if args.start:
         vm = provisioner.virtual_machine_locate(instance_name)
         network = build_network_name(args.project, args.network)
-        vmi = provisioner.vmi_locate(vm, network, 'veth0')
-        ifname = manager.create_interface(args.container_id, 'veth0', vmi)
+        vmi = provisioner.vmi_locate(vm, network, ifname_str)
+        ifname = manager.create_interface(args.container_id, ifname_str, vmi)
         interface_register(vm, vmi, ifname)
+        print "Executing 'ip netns exec %s dhclient %s'" % ( args.container_id,ifname_str)
         subprocess.check_output(
-            'ip netns exec %s dhclient veth0' % args.container_id, shell=True)
+            'ip netns exec %s dhclient %s' % ( args.container_id,ifname_str), shell=True)
     elif args.stop:
         vm = provisioner.virtual_machine_lookup(instance_name)
 
