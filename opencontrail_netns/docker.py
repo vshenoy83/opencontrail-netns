@@ -56,9 +56,9 @@ def main():
         vmi = provisioner.vmi_locate(vm, network, ifname_str)
         ifname = manager.create_interface(args.container_id, ifname_str, vmi)
         interface_register(vm, vmi, ifname)
-        print "Executing 'ip netns exec %s dhclient %s'" % ( args.container_id,ifname_str)
-        #subprocess.check_output(
-        #    'ip netns exec %s dhclient %s' % ( args.container_id,ifname_str), shell=True)
+        print "Bringing up %s inside container %s" % (ifname_str, args.container_id)
+        subprocess.check_output(
+            'ip netns exec %s ip link set %s up' % ( args.container_id,ifname_str), shell=True)
     elif args.stop:
         vm = provisioner.virtual_machine_lookup(instance_name)
 
