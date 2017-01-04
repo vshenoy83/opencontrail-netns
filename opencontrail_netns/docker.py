@@ -57,8 +57,8 @@ def main():
         ifname = manager.create_interface(args.container_id, ifname_str, vmi)
         interface_register(vm, vmi, ifname)
         print "Executing 'ip netns exec %s dhclient %s'" % ( args.container_id,ifname_str)
-        subprocess.check_output(
-            'ip netns exec %s dhclient %s' % ( args.container_id,ifname_str), shell=True)
+        #subprocess.check_output(
+        #    'ip netns exec %s dhclient %s' % ( args.container_id,ifname_str), shell=True)
     elif args.stop:
         vm = provisioner.virtual_machine_lookup(instance_name)
 
@@ -73,8 +73,8 @@ def main():
             provisioner.vmi_delete(ref['uuid'])
 
         provisioner.virtual_machine_delete(vm)
-        subprocess.check_output(
-            'ip netns delete %s' % args.container_id, shell=True)
+        #subprocess.check_output(
+        #    'ip netns delete %s' % args.container_id, shell=True)
 
 if __name__ == '__main__':
     main()
