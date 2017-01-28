@@ -30,6 +30,7 @@ def main():
     parser.add_argument("-p", "--api-port", type=int, help="API server port")
     parser.add_argument("-n", "--network", help="Primary network")
     parser.add_argument("--project", help="Network project")
+    parser.add_argument("--interface", help="Interface number on the vMX 0 for ge-0/0/0, 1 for ge-0/0/1 and so on")
     parser.add_argument("--start", action='store_true', help="Create namespace")
     parser.add_argument("--stop", action='store_true', help="Delete namespace")
     parser.add_argument("container_id", metavar='container-id', help="Container ID")
@@ -48,7 +49,7 @@ def main():
 
     subprocess.check_output(
         'ln -sf /proc/%d/ns/net /var/run/netns/%s' % (pid, args.container_id), shell=True)
-    ifname_str='%s%s' %('veth',str(random.randrange(1,1024)))
+    ifname_str='%s%s' %('veth',str(int(args.interface)+1024))
 
     if args.start:
         vm = provisioner.virtual_machine_locate(instance_name)
