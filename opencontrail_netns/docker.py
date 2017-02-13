@@ -46,10 +46,10 @@ def main():
         'docker inspect -f \'{{.State.Pid}}\' %s' % args.container_id, shell=True)
     pid = int(pid_str)
 
-    subprocess.check_output(
-        'ln -sf /proc/%d/ns/net /var/run/netns/%s' % (pid, args.container_id), shell=True)
-    if subprocess.check_output("ip netns exec vmx1 ip link | grep veth | awk '{print $2}' | awk -F ':' '{print $1}' | awk -F 'veth' '{print $2}' | tail -n 1",shell=True).strip():
-	ifname_id=int(subprocess.check_output("ip netns exec vmx1 ip link | grep veth | awk '{print $2}' | awk -F ':' '{print $1}' | awk -F 'veth' '{print $2}' | tail -n 1",shell=True).strip())+1
+    subprocess.check_output( 'ln -sf /proc/%d/ns/net /var/run/netns/%s' % (pid, args.container_id), shell=True)
+    get_veth_cmd = "ip netns exec %s ip link | grep veth | awk '{print $2}' | awk -F ':' '{print $1}' | awk -F 'veth' '{print $2}' | tail -n 1" %(args.container_id)
+    if subprocess.check_output(get_veth_cmd, shell=True).strip():
+	ifname_id=int(subprocess.check_output(get_veth_cmd, shell=True).strip()) + 1
     else:
 	ifname_id=1024
     ifname_str='%s%s' %('veth',str(ifname_id))
